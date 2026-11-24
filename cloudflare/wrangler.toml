@@ -4,8 +4,8 @@ compatibility_date = "2026-11-24"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "noor-prayer"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_name = "noor-push-db"
+database_id = "424dabac-0f2e-43ad-ae73-740f48494544"
 
 [triggers]
 crons = ["* * * * *"]

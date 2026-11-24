@@ -76,8 +76,8 @@ async function encryptPush(subscription, message) {
   const authInfo = concat(utf8("WebPush: info\0"), uaPublic, serverPublic);
   const ikm = await hkdf(shared, auth, authInfo, 32);
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const cek = await hkdf(ikm, salt, "Content-Encoding: aes128gcm\\0", 16);
-  const nonce = await hkdf(ikm, salt, "Content-Encoding: nonce\\0", 12);
+  const cek = await hkdf(ikm, salt, "Content-Encoding: aes128gcm\0", 16);
+  const nonce = await hkdf(ikm, salt, "Content-Encoding: nonce\0", 12);
 
   const aesKey = await crypto.subtle.importKey("raw", cek, "AES-GCM", false, ["encrypt"]);
   const padded = concat(utf8(message), new Uint8Array([2]));

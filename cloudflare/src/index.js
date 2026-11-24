@@ -25,7 +25,7 @@ const utf8 = (s) => new TextEncoder().encode(s);
 async function hkdf(secret, salt, info, length) {
   const key = await crypto.subtle.importKey("raw", secret, "HKDF", false, ["deriveBits"]);
   return new Uint8Array(await crypto.subtle.deriveBits(
-    { name: "HKDF", hash: "SHA-256", salt, info: utf8(info) }, key, length * 8
+    { name: "HKDF", hash: "SHA-256", salt, info: (typeof info === "string" ? utf8(info) : info) }, key, length * 8
   ));
 }
 
@@ -74,10 +74,10 @@ async function encryptPush(subscription, message) {
   ));
 
   const authInfo = concat(utf8("WebPush: info\0"), uaPublic, serverPublic);
-  const ikm = await hkdf(shared, auth, new TextDecoder().decode(authInfo), 32);
+  const ikm = await hkdf(shared, auth, authInfo, 32);
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const cek = await hkdf(ikm, salt, "Content-Encoding: aes128gcm", 16);
-  const nonce = await hkdf(ikm, salt, "Content-Encoding: nonce", 12);
+  const cek = await hkdf(ikm, salt, "Content-Encoding: aes128gcm\\0", 16);
+  const nonce = await hkdf(ikm, salt, "Content-Encoding: nonce\\0", 12);
 
   const aesKey = await crypto.subtle.importKey("raw", cek, "AES-GCM", false, ["encrypt"]);
   const padded = concat(utf8(message), new Uint8Array([2]));
